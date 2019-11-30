@@ -20,9 +20,11 @@ typedef struct {
 	
 	char *context;
 } storage_t;
+//storage_t 라는 타입으로 위의 구조체를 불러올 수 있게 한다. 
 
 
 static storage_t** deliverySystem; 			//deliverySystem
+//구조체의 포인터의 포인터? 
 static int storedCnt = 0;					//number of cells occupied
 static int systemSize[2] = {0, 0};  		//row/column of the delivery system
 static char masterPassword[PASSWD_LEN+1];	//master password

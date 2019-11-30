@@ -7,9 +7,11 @@
 #define N_ROOM					10
 
 #define STORAGE_FILEPATH 		"storage.txt"
+//아예 설정 파일의 루트를 상수로 고정해둔다. 
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
-
+	
+//코드를 이해하기 위해 주석을 사용해서 설명을 적겠습니다. 
 
 //get an integer value from keyboard
 int getIntegerInput(void)
@@ -27,28 +29,33 @@ int getIntegerInput(void)
 int buildingValidityCheck(int nBuilding, int nRoom)
 {
 	if (nBuilding <= 0 || nBuilding > N_BUILDING)
+	//빌딩번호가 0 이하거나, 정해둔 빌딩 수보다 클 때 불가능한 번호라고 판단. 
 	{
 		return -1;
 	}
 	
 	if (nRoom/100 <= 0 || nRoom/100 > N_FLOOR)
+	//방 호수가 0 이하거나, 정해진 층수보다 높은 층(백의 자리)을 입력한 경우 
 	{
 		return -1;
 	}
 	
 	if (nRoom%100 <= 0 || nRoom%100 > N_ROOM)
+	//방 호수가 음수이거나 한 층의 호수 정해진 것보다 클때 
 	{
 		return -1;
 	}
 	
 	return 0;
 }
+//즉 방의 번호는 101호부터 1010호까지 한 층에 10호씩 존재한다. 
 
 
 int main(int argc, char *argv[]) {
-	
-	
+
+
 	int cmd;
+	//사용자의 입력을 받는 변수 
 	int x, y, nBuilding, nRoom;
 	char msg[MAX_MSG_SIZE+1];
 	char passwd[PASSWD_LEN+1];
