@@ -11,8 +11,7 @@
   int cnt : number of packages in the cell
   char passwd[] : password setting (4 characters)
   char *contents : package contents (message string)
-  ㄴ오타인거같아서 바꿔드렸습니다 
-*/
+  ㄴ오타인거같아서 바꿔드렸습니다*/ 
 typedef struct {
 	int building;
 	int room;
@@ -54,6 +53,34 @@ static void printStorageInside(int x, int y) {
 //and allocate memory to the context pointer
 //int x, int y : cell coordinate to be initialized
 static void initStorage(int x, int y) {
+	int temp;
+	int i;
+	
+	deliverySystem = (storage_t**)malloc(x*sizeof(storage_t*));
+	//systemSize[0]'층' 만큼을 만든다. 한 층에 systemSize[1]개의 보관함 존재 
+	for (temp=0; temp<x; temp++)
+	{
+		deliverySystem[temp] = (storage_t*)malloc(y*sizeof(storage_t));
+	}
+	//각 '층'에 보관함 만들기
+	
+	//일단 모든 보관함 초기화하기
+	for (temp=0; temp<x; temp++)
+	{
+		for(i=0; i<y; i++)
+		{
+			deliverySystem[temp][i].building = 0;
+			deliverySystem[temp][i].room = 0;
+			deliverySystem[temp][i].cnt = 0;
+			deliverySystem[temp][i].content = "\0";
+			strcpy (deliverySystem[temp][i].passwd , "0000");
+		}
+	} 
+	
+	/*파일의 끝까지 반복문 만들어서
+	첫번째= 층 두번째= 칸 
+	동 ->building 호 ->room 비밀번호 문자열 순으로 읽어서 동적 메모리에 넣어주기 
+	*/
 	
 }
 
@@ -75,6 +102,13 @@ static int inputPasswd(int x, int y) {
 //return : 0 - backup was successfully done, -1 - failed to backup
 int str_backupSystem(char* filepath) {
 	//바꾼 상태를 저장. 
+	FILE *fp;
+	fp = fopen(filepath, "w");
+	//우선 쓰기 모드로 연다
+	//raw colomn \n 마스터패스워드 순으로 출력 
+	fprintf(fp, "%i %i\n%s", systemSize[0], systemSize[1], masterPassword);
+	//현재 보관함 상태 출력(해야할것) 
+	fclose(fp);
 }
 
 
@@ -89,7 +123,7 @@ int str_createSystem(char* filepath) {
 	/*일단 파일부터 열자. 닫는 건 메인에 하나?
 	파일포인터가 어디까지 유지돌지 모르니 일단 매번 여닫는 게 안전할 것 같다.*/ 
 	FILE *fp;
-	fp = fopen("filepath", "r");
+	fp = fopen(filepath, "r");
 	if (fp == NULL)
 	{
 		return -1;
@@ -100,18 +134,27 @@ int str_createSystem(char* filepath) {
 	//첫번째 숫자는 raw를 나타내는 systemsize[0]에 입력 
 	
 	fscanf(fp, "%d", &temp);
-	systemSize[0] = temp; 
+	systemSize[1] = temp; 
 	//두번째 숫자를 column 나타내는 systemsize[1]에 입력
+	fscanf(fp, "%s", masterPassword);
+	//마스터 패스워드를 입력? 
 	
-	 
+	initStorage(systemSize[0], systemSize[1]);
+	//보관함 칸 수 만큼 동적 메모리 할당 
 	
 	fclose(fp);
 	return 0;
 }
 
 //free the memory of the deliverySystem 
+//deliverySystem 에 줬던 메모리 되돌려놓기
 void str_freeSystem(void) {
-	
+	int temp;
+	for (temp=0; temp<systemSize[0]; temp++)
+	{
+		free(deliverySystem[temp]);
+	}
+	free(deliverySystem);
 }
 
 
