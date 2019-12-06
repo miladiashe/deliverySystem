@@ -6,7 +6,7 @@
 #define N_FLOOR					10
 #define N_ROOM					10
 
-#define STORAGE_FILEPATH 		"storage.txt"
+#define STORAGE_FILEPATH "storage.txt"
 //아예 설정 파일의 루트를 상수로 고정해둔다. 
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
@@ -19,7 +19,6 @@ int getIntegerInput(void)
 	int input = -1;
 	scanf("%d", &input);
 	fflush(stdin);
-	
 	return input;
 }
 
@@ -61,6 +60,7 @@ int main(int argc, char *argv[]) {
 	char passwd[PASSWD_LEN+1];
 	
 	//1. initialize the delivery system
+	//str_createSystem으로 시작 조건을 설정한다. 
 	if (str_createSystem(STORAGE_FILEPATH) != 0)
 	{
 		printf("failed to open storage config file! (%s)\n", STORAGE_FILEPATH);
@@ -103,12 +103,14 @@ int main(int argc, char *argv[]) {
 				printf(" - storage column : ");
 				y = getIntegerInput();
 				if (str_checkStorage(x,y) != 0)
+				//쓰이고 있거나 정의 밖인 경우 str_checkStorage에서 0을 반환해야 한다.  
 				{
 					printf(" -----------> Storage (%i,%i) is already occupied or invalid!\n", x, y);
 					continue;
 				}
 				
                 //destination input
+				//몇번 빌딩의 몇번째 호실인지 입력을 받는다.  
 				printf(" - building # : ");
 				nBuilding = getIntegerInput();
 				printf(" - room # : ");

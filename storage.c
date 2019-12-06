@@ -10,7 +10,8 @@
   int room : room number of the destination
   int cnt : number of packages in the cell
   char passwd[] : password setting (4 characters)
-  char *contents : package context (message string)
+  char *contents : package contents (message string)
+  ㄴ오타인거같아서 바꿔드렸습니다 
 */
 typedef struct {
 	int building;
@@ -18,13 +19,13 @@ typedef struct {
 	int cnt;
 	char passwd[PASSWD_LEN+1];
 	
-	char *context;
+	char *content;
 } storage_t;
 //storage_t 라는 타입으로 위의 구조체를 불러올 수 있게 한다. 
 
 
 static storage_t** deliverySystem; 			//deliverySystem
-//구조체의 포인터의 포인터? 
+//malloc함수를 쓰기 위해 이차원 배열 구조를 갖는 구조체로 정의한 것 같다 
 static int storedCnt = 0;					//number of cells occupied
 static int systemSize[2] = {0, 0};  		//row/column of the delivery system
 static char masterPassword[PASSWD_LEN+1];	//master password
@@ -34,13 +35,13 @@ static char masterPassword[PASSWD_LEN+1];	//master password
 
 // ------- inner functions ---------------
 
-//print the inside context of a specific cell
-//int x, int y : cell to print the context
+//print the inside content of a specific cell
+//int x, int y : cell to print the content
 static void printStorageInside(int x, int y) {
 	printf("\n------------------------------------------------------------------------\n");
 	printf("------------------------------------------------------------------------\n");
 	if (deliverySystem[x][y].cnt > 0)
-		printf("<<<<<<<<<<<<<<<<<<<<<<<< : %s >>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", deliverySystem[x][y].context);
+		printf("<<<<<<<<<<<<<<<<<<<<<<<< : %s >>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", deliverySystem[x][y].content);
 	else
 		printf("<<<<<<<<<<<<<<<<<<<<<<<< empty >>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 		
@@ -73,7 +74,7 @@ static int inputPasswd(int x, int y) {
 //char* filepath : filepath and name to write
 //return : 0 - backup was successfully done, -1 - failed to backup
 int str_backupSystem(char* filepath) {
-	
+	//바꾼 상태를 저장. 
 }
 
 
@@ -82,7 +83,30 @@ int str_backupSystem(char* filepath) {
 //char* filepath : filepath and name to read config parameters (row, column, master password, past contexts of the delivery system
 //return : 0 - successfully created, -1 - failed to create the system
 int str_createSystem(char* filepath) {
+	int temp;
+	/*값을 잠시 여기다 저장해두자...*/ 
 	
+	/*일단 파일부터 열자. 닫는 건 메인에 하나?
+	파일포인터가 어디까지 유지돌지 모르니 일단 매번 여닫는 게 안전할 것 같다.*/ 
+	FILE *fp;
+	fp = fopen("filepath", "r");
+	if (fp == NULL)
+	{
+		return -1;
+	}
+	//파일이 안 열렸을 경우 못열었다고 리턴함 
+	fscanf(fp, "%d", &temp);
+	systemSize[0] = temp; 
+	//첫번째 숫자는 raw를 나타내는 systemsize[0]에 입력 
+	
+	fscanf(fp, "%d", &temp);
+	systemSize[0] = temp; 
+	//두번째 숫자를 column 나타내는 systemsize[1]에 입력
+	
+	 
+	
+	fclose(fp);
+	return 0;
 }
 
 //free the memory of the deliverySystem 
@@ -126,6 +150,7 @@ void str_printStorageStatus(void) {
 
 
 //check if the input cell (x,y) is valid and whether it is occupied or not
+//systemsize에 크기를 정의? 
 int str_checkStorage(int x, int y) {
 	if (x < 0 || x >= systemSize[0])
 	{
@@ -137,7 +162,8 @@ int str_checkStorage(int x, int y) {
 		return -1;
 	}
 	
-	return deliverySystem[x][y].cnt;	
+	return deliverySystem[x][y].cnt;
+	//deliverySystem이라는 구조체의 cnt 값을 반환.  
 }
 
 
@@ -167,6 +193,7 @@ int str_extractStorage(int x, int y) {
 //int nBuilding, int nRoom : my building/room numbers
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) {
-	
+	int cnt;
+	//컴파일하려고 임시로 집어넣음;; 
 	return cnt;
 }
