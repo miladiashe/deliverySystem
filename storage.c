@@ -54,7 +54,7 @@ static void printStorageInside(int x, int y) {
 //set all the member variable as an initial value
 //and allocate memory to the context pointer
 //int x, int y : cell coordinate to be initialized
-static void initStorage(int x, int y, FILE *p) {
+static void initStorage(int x, int y, char* filepath) {
 	int temp;
 	int i;
 	int scanX;
@@ -63,6 +63,10 @@ static void initStorage(int x, int y, FILE *p) {
 	int scanNUM;
 	char scanPWD[PASSWD_LEN+1];
 	char scanMSG[MAX_MSG_SIZE+1]; 
+	
+	FILE *fp;
+	fp = fopen(filepath, "r");
+	
 	//파일의 끝인지 체크하는 변수 하나 만들었다. 
 	
 	deliverySystem = (storage_t**)malloc(x*sizeof(storage_t*));
@@ -92,22 +96,27 @@ static void initStorage(int x, int y, FILE *p) {
 	첫번째= 층 두번째= 칸 
 	동 ->building 호 ->room 비밀번호 문자열 순으로 읽어서 동적 메모리에 넣어주기 
 	*/
-	while (fscanf(p, "%d %d", &scanX, &scanY) != EOF)
+	fscanf(fp, "%d", &temp);
+	fscanf(fp, "%d", &temp);
+	fscanf(fp, "%d", &temp);
+	//위 함수와 분리하고나니 파일 위치 표시자 옮기기 귀찮아서 세번 읽어줍니다.... 
+	
+	while (fscanf(fp, "%d %d", &scanX, &scanY) != EOF)
 	// EOF인 경우 루프를 끝내기. 
 	{
 		//일단 다른 변수도 저장용 변수를 만들자  
 		//문자열은 strcpy 쓰기? 난 내 프로그램이 잘 작동될걸 믿으니까 한줄 단위로 처리할것
 
-		fscanf(p, "%d", &scanNUM);
+		fscanf(fp, "%d", &scanNUM);
 		deliverySystem[scanX][scanY].building = scanNUM;
 		//동 읽기
-		fscanf(p, "%d", &scanNUM);
+		fscanf(fp, "%d", &scanNUM);
 		deliverySystem[scanX][scanY].room = scanNUM;
 		//호 읽기
-		fscanf(p, "%s", scanPWD);
+		fscanf(fp, "%s", scanPWD);
 		strcpy (deliverySystem[scanX][scanY].passwd, scanPWD);
 		//비밀번호 읽기
-		fscanf(p, "%s", scanMSG);
+		fscanf(fp, "%s", scanMSG);
 		strcpy (deliverySystem[scanX][scanY].content, scanMSG);
 		//내용물 읽기
 		deliverySystem[scanX][scanY].cnt = 1;
@@ -151,12 +160,29 @@ static int inputPasswd(int x, int y) {
 //return : 0 - backup was successfully done, -1 - failed to backup
 int str_backupSystem(char* filepath) {
 	//바꾼 상태를 저장. 
+	int i, j;
 	FILE *fp;
 	fp = fopen(filepath, "w");
+	if(fp == NULL)
+	{
+		return 1;
+	}
 	//우선 쓰기 모드로 연다
 	//raw colomn \n 마스터패스워드 순으로 출력 
-	fprintf(fp, "%i %i\n%s", systemSize[0], systemSize[1], masterPassword);
+	fprintf(fp, "%i %i\n%s\n", systemSize[0], systemSize[1], masterPassword);
 	//현재 보관함 상태 출력(해야할것) 
+	for(i=0; i<systemSize[0]; i++)
+	{
+		for(j=0; j<systemSize[1]; j++)
+		{
+			if  (deliverySystem[i][j].cnt>0)
+			//cnt가 0 보다 클때만 
+			{
+			fprintf(fp,"%i %i %i %i %s %s\n", i, j, deliverySystem[i][j].building, deliverySystem[i][j].room, deliverySystem[i][j].passwd, deliverySystem[i][j].content);
+				//복사한다 
+			}
+		}
+	}
 	fclose(fp);
 }
 
@@ -187,11 +213,12 @@ int str_createSystem(char* filepath) {
 	//두번째 숫자를 column 나타내는 systemsize[1]에 입력
 	fscanf(fp, "%s", masterPassword);
 	//마스터 패스워드를 입력? 
+	fclose(fp);
 	
-	initStorage(systemSize[0], systemSize[1], fp);
+	initStorage(systemSize[0], systemSize[1], filepath);
 	//보관함 칸 수 만큼 동적 메모리 할당 
 	
-	fclose(fp);
+
 	return 0;
 }
 
@@ -268,6 +295,25 @@ int str_checkStorage(int x, int y) {
 //return : 0 - successfully put the package, -1 - failed to put
 int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) {
 	
+	deliverySystem[x][y].building = nBuilding;
+	deliverySystem[x][y].room = nRoom;
+	strcpy (deliverySystem[x][y].content, msg);
+	strcpy (deliverySystem[x][y].passwd, passwd);
+	deliverySystem[x][y].cnt = 1;
+	
+	if(deliverySystem[x][y].building != nBuilding
+	|| deliverySystem[x][y].room != nRoom
+	|| strcmp(deliverySystem[x][y].content, msg)!=0
+	|| strcmp(deliverySystem[x][y].passwd, passwd)!=0)
+	//만약 비교한게 하나라도 틀릴 경우 
+	{
+		return 1; 
+		//1 반환 
+	}
+	else //다 맞으면 0 반환 
+	{
+		return 0;
+	}
 }
 
 
