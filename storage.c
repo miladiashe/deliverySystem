@@ -52,9 +52,11 @@ static void printStorageInside(int x, int y) {
 //set all the member variable as an initial value
 //and allocate memory to the context pointer
 //int x, int y : cell coordinate to be initialized
-static void initStorage(int x, int y) {
+static void initStorage(int x, int y, FILE *p) {
 	int temp;
 	int i;
+	int checkEOF = 0;
+	//파일의 끝인지 체크하는 변수 하나 만들었다. 
 	
 	deliverySystem = (storage_t**)malloc(x*sizeof(storage_t*));
 	//systemSize[0]'층' 만큼을 만든다. 한 층에 systemSize[1]개의 보관함 존재 
@@ -75,12 +77,45 @@ static void initStorage(int x, int y) {
 			deliverySystem[temp][i].content = "\0";
 			strcpy (deliverySystem[temp][i].passwd , "0000");
 		}
-	} 
+	}
 	
 	/*파일의 끝까지 반복문 만들어서
+	while(scan != EOF) 하면 되나?
+	while(1) 하고 break 쓸까?
 	첫번째= 층 두번째= 칸 
 	동 ->building 호 ->room 비밀번호 문자열 순으로 읽어서 동적 메모리에 넣어주기 
 	*/
+	while (checkEOF != 1)
+	//checkEOF가 1이 아닌 동안만 계속 돌기. EOF인 경우 1로 만들고 루프를 끝내기. 
+	{
+		int scanX;
+		int scanY;
+		//deliverySystem[scanX][scanY] 번 메모리에 접근하기 위함
+		int scanNUM;
+		char* scanSTR;
+		//일단 다른 변수도 저장용 변수를 만들자  
+		//문자열은 strcpy 쓰기? 난 내 프로그램이 잘 작동될걸 믿으니까 한줄 단위로 처리할것
+		fscanf(p, "%d", &scanX);
+		if (scanX == EOF)
+		{
+			checkEOF = 1;
+			break;
+		}
+		fscanf(p, "%d", &scanY);
+		
+		fscanf(p, "%d", &scanNUM);
+		deliverySystem[scanX][scanY].building = scanNUM;
+		//동 읽기
+		fscanf(p, "%d", &scanNUM);
+		deliverySystem[scanX][scanY].room = scanNUM;
+		//호 읽기
+		fscanf(p, "%s", scanSTR);
+		strcpy (deliverySystem[scanX][scanY].passwd, scanSTR);
+		//비밀번호 읽기
+		fscanf(p, "%s", scanSTR);
+		strcpy (deliverySystem[scanX][scanY].content, scanSTR);
+		//내용물 읽기
+	}
 	
 }
 
@@ -139,7 +174,7 @@ int str_createSystem(char* filepath) {
 	fscanf(fp, "%s", masterPassword);
 	//마스터 패스워드를 입력? 
 	
-	initStorage(systemSize[0], systemSize[1]);
+	initStorage(systemSize[0], systemSize[1], fp);
 	//보관함 칸 수 만큼 동적 메모리 할당 
 	
 	fclose(fp);

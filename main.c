@@ -135,6 +135,7 @@ int main(int argc, char *argv[]) {
                 //put the package in the cell
 				printf(" -----------> processing to put the package...\n\n");
 				if (str_pushToStorage(x, y, nBuilding, nRoom, msg, passwd) == 0)
+				//str_pushToStorage(x, y, nBuilding, nRoom, msg, passwd) 를 한번 실행시켜서 잘 됐나 본다. 
 				{
 					printf(" -----------> Succeeded to put package for (%i, %i) user in (%i,%i), msg : %s passwd : %s\n", nBuilding, nRoom, x, y, msg, passwd);
 				}
