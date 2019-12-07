@@ -10,7 +10,7 @@
   int room : room number of the destination
   int cnt : number of packages in the cell
   char passwd[] : password setting (4 characters)
-  char *contents : package contents (message string)
+  char *content : package contents (message string)
   ㄴ오타인거같아서 바꿔드렸습니다*/ 
 typedef struct {
 	int building;
@@ -18,7 +18,9 @@ typedef struct {
 	int cnt;
 	char passwd[PASSWD_LEN+1];
 	
-	char *content;
+	//char *content;
+	//안돼서 구조체 변수 새로 만들었어요 
+	char content[MAX_MSG_SIZE+1];
 } storage_t;
 //storage_t 라는 타입으로 위의 구조체를 불러올 수 있게 한다. 
 
@@ -56,6 +58,12 @@ static void initStorage(int x, int y, FILE *p) {
 	int temp;
 	int i;
 	int checkEOF = 0;
+	int scanX;
+	int scanY;
+	//deliverySystem[scanX][scanY] 번 메모리에 접근하기 위함
+	int scanNUM;
+	char scanPWD[PASSWD_LEN+1];
+	char scanMSG[MAX_MSG_SIZE+1]; 
 	//파일의 끝인지 체크하는 변수 하나 만들었다. 
 	
 	deliverySystem = (storage_t**)malloc(x*sizeof(storage_t*));
@@ -74,8 +82,8 @@ static void initStorage(int x, int y, FILE *p) {
 			deliverySystem[temp][i].building = 0;
 			deliverySystem[temp][i].room = 0;
 			deliverySystem[temp][i].cnt = 0;
-			deliverySystem[temp][i].content = "\0";
-			strcpy (deliverySystem[temp][i].passwd , "0000");
+			strcpy (deliverySystem[temp][i].passwd , masterPassword);
+			strcpy (deliverySystem[temp][i].content , "\0");
 		}
 	}
 	
@@ -88,19 +96,14 @@ static void initStorage(int x, int y, FILE *p) {
 	while (checkEOF != 1)
 	//checkEOF가 1이 아닌 동안만 계속 돌기. EOF인 경우 1로 만들고 루프를 끝내기. 
 	{
-		int scanX;
-		int scanY;
-		//deliverySystem[scanX][scanY] 번 메모리에 접근하기 위함
-		int scanNUM;
-		char* scanSTR;
 		//일단 다른 변수도 저장용 변수를 만들자  
 		//문자열은 strcpy 쓰기? 난 내 프로그램이 잘 작동될걸 믿으니까 한줄 단위로 처리할것
-		fscanf(p, "%d", &scanX);
-		if (scanX == EOF)
+		if (ftell(p) == SEEK_END)
 		{
 			checkEOF = 1;
-			break;
 		}
+		fscanf(p, "%d", &scanX);
+		
 		fscanf(p, "%d", &scanY);
 		
 		fscanf(p, "%d", &scanNUM);
@@ -109,12 +112,14 @@ static void initStorage(int x, int y, FILE *p) {
 		fscanf(p, "%d", &scanNUM);
 		deliverySystem[scanX][scanY].room = scanNUM;
 		//호 읽기
-		fscanf(p, "%s", scanSTR);
-		strcpy (deliverySystem[scanX][scanY].passwd, scanSTR);
+		fscanf(p, "%s", scanPWD);
+		strcpy (deliverySystem[scanX][scanY].passwd, scanPWD);
 		//비밀번호 읽기
-		fscanf(p, "%s", scanSTR);
-		strcpy (deliverySystem[scanX][scanY].content, scanSTR);
+		fscanf(p, "%s", scanMSG);
+		strcpy (deliverySystem[scanX][scanY].content, scanMSG);
 		//내용물 읽기
+		deliverySystem[scanX][scanY].cnt = 1;
+		//cnt에 값 저 장 
 	}
 	
 }
