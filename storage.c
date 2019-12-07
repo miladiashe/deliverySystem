@@ -93,19 +93,12 @@ static void initStorage(int x, int y, FILE *p) {
 	첫번째= 층 두번째= 칸 
 	동 ->building 호 ->room 비밀번호 문자열 순으로 읽어서 동적 메모리에 넣어주기 
 	*/
-	while (checkEOF != 1)
+	while (fscanf(p, "%d %d", &scanX, &scanY) != EOF)
 	//checkEOF가 1이 아닌 동안만 계속 돌기. EOF인 경우 1로 만들고 루프를 끝내기. 
 	{
 		//일단 다른 변수도 저장용 변수를 만들자  
 		//문자열은 strcpy 쓰기? 난 내 프로그램이 잘 작동될걸 믿으니까 한줄 단위로 처리할것
-		if (ftell(p) == SEEK_END)
-		{
-			checkEOF = 1;
-		}
-		fscanf(p, "%d", &scanX);
-		
-		fscanf(p, "%d", &scanY);
-		
+
 		fscanf(p, "%d", &scanNUM);
 		deliverySystem[scanX][scanY].building = scanNUM;
 		//동 읽기
@@ -120,6 +113,7 @@ static void initStorage(int x, int y, FILE *p) {
 		//내용물 읽기
 		deliverySystem[scanX][scanY].cnt = 1;
 		//cnt에 값 저 장 
+
 	}
 	
 }
