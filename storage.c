@@ -57,7 +57,6 @@ static void printStorageInside(int x, int y) {
 static void initStorage(int x, int y, FILE *p) {
 	int temp;
 	int i;
-	int checkEOF = 0;
 	int scanX;
 	int scanY;
 	//deliverySystem[scanX][scanY] 번 메모리에 접근하기 위함
@@ -94,7 +93,7 @@ static void initStorage(int x, int y, FILE *p) {
 	동 ->building 호 ->room 비밀번호 문자열 순으로 읽어서 동적 메모리에 넣어주기 
 	*/
 	while (fscanf(p, "%d %d", &scanX, &scanY) != EOF)
-	//checkEOF가 1이 아닌 동안만 계속 돌기. EOF인 경우 1로 만들고 루프를 끝내기. 
+	// EOF인 경우 루프를 끝내기. 
 	{
 		//일단 다른 변수도 저장용 변수를 만들자  
 		//문자열은 strcpy 쓰기? 난 내 프로그램이 잘 작동될걸 믿으니까 한줄 단위로 처리할것
@@ -122,7 +121,23 @@ static void initStorage(int x, int y, FILE *p) {
 //int x, int y : cell for password check
 //return : 0 - password is matching, -1 - password is not matching
 static int inputPasswd(int x, int y) {
-	
+	char inputPWD[PASSWD_LEN+1];
+	printf("비밀번호를 입력해 주세요");
+	scanf("%4s", inputPWD);
+	fflush(stdin);
+	//main에서 쓰신 함수를 베껴왔습니다
+	if(strcmp(inputPWD, deliverySystem[x][y].passwd) == 0)//같으면
+	{
+		printf("비밀번호가 확인되었습니다.");
+		return 0;
+	}
+	else
+	{
+		printf("잘못된 비밀번호입니다.");
+		return 1;
+	}
+
+	//if deliverySystem[scanX][scanY].cnt
 }
 
 
