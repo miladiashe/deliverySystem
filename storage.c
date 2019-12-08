@@ -139,18 +139,18 @@ static void initStorage(int x, int y) {
 //return : 0 - password is matching, -1 - password is not matching
 static int inputPasswd(int x, int y) {
 	char inputPWD[PASSWD_LEN+1];
-	printf("비밀번호를 입력해 주세요");
+	printf("비밀번호를 입력해 주세요\n");
 	scanf("%4s", inputPWD);
 	fflush(stdin);
 	//main에서 쓰신 함수를 베껴왔습니다
 	if(strcmp(inputPWD, deliverySystem[x][y].passwd) == 0)//같으면
 	{
-		printf("비밀번호가 확인되었습니다.");
+		printf("비밀번호가 확인되었습니다.\n");
 		return 0;
 	}
 	else
 	{
-		printf("잘못된 비밀번호입니다.");
+		printf("잘못된 비밀번호입니다.\n");
 		return 1;
 	}
 
@@ -381,6 +381,21 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 //int x, int y : coordinate of the cell to extract
 //return : 0 - successfully extracted, -1 = failed to extract
 int str_extractStorage(int x, int y) {
+	//1. 비밀번호를 체크한다
+	if (inputPasswd(x, y) == 0)
+	{
+		//2. 맞으면 소포를 꺼내준다
+		printf("\n소포 내용물:  %s\n", deliverySystem[x][y].content);
+		initStorage(x,y);
+		return 0;
+		//3. initstorage(x,y);
+		//4. return 0
+	}
+	else
+	{
+		return 1;
+	}
+	//2-1. 틀리면 return 1 
 	
 }
 
