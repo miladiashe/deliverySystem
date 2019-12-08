@@ -210,6 +210,7 @@ int str_createSystem(char* filepath) {
 	int scanNUM;
 	char scanPWD[PASSWD_LEN+1];
 	char scanMSG[MAX_MSG_SIZE+1];
+	//변수들은 선언해서 일단 한번 입력을 받고 그걸 복사하는 식으로 구현. 
 	
 	/*일단 파일부터 열자. 닫는 건 메인에 하나?
 	파일포인터가 어디까지 유지돌지 모르니 일단 매번 여닫는 게 안전할 것 같다.*/ 
@@ -284,6 +285,7 @@ int str_createSystem(char* filepath) {
 //deliverySystem 에 줬던 메모리 되돌려놓기
 void str_freeSystem(void) {
 	int temp;
+	//for 위한 변수 
 	for (temp=0; temp<systemSize[0]; temp++)
 	{
 		free(deliverySystem[temp]);
@@ -385,8 +387,9 @@ int str_extractStorage(int x, int y) {
 	if (inputPasswd(x, y) == 0)
 	{
 		//2. 맞으면 소포를 꺼내준다
-		printf("\n소포 내용물:  %s\n", deliverySystem[x][y].content);
+		printf("\n소포 내용물 : %s\n", deliverySystem[x][y].content);
 		initStorage(x,y);
+		//보관함을 비운다 
 		return 0;
 		//3. initstorage(x,y);
 		//4. return 0
@@ -405,6 +408,22 @@ int str_extractStorage(int x, int y) {
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) {
 	int cnt;
-	//컴파일하려고 임시로 집어넣음;; 
+	//컴파일하려고 임시로 집어넣음;; 넣은김에 쓰겠습니다
+	int i, j;
+	//for 돌리기 위한 변수
+	
+	for(i=0; i<systemSize[0]; i++)
+	{
+		for(j=0; j<systemSize[1]; j++)
+		{
+			if  (deliverySystem[i][j].building == nBuilding)
+			{
+				if (deliverySystem[i][j].room == nRoom)
+				{
+					printf("your package is in row %i, column %i\n"); 
+				}
+			}
+		}
+	}
 	return cnt;
 }
