@@ -54,8 +54,15 @@ static void printStorageInside(int x, int y) {
 //set all the member variable as an initial value
 //and allocate memory to the context pointer
 //int x, int y : cell coordinate to be initialized
-static void initStorage(int x, int y, char* filepath) {
-	int temp;
+static void initStorage(int x, int y) {
+	
+	deliverySystem[x][y].building = 0;
+	deliverySystem[x][y].room = 0;
+	deliverySystem[x][y].cnt = 0;
+	strcpy (deliverySystem[x][y].passwd , masterPassword);
+	//'기본 비밀번호'는 마스터 비밀번호와 같게 해 두는 것이 안전할것이다. 
+	strcpy (deliverySystem[x][y].content , "\0");
+/*	int temp;
 	int i;
 	int scanX;
 	int scanY;
@@ -67,7 +74,6 @@ static void initStorage(int x, int y, char* filepath) {
 	FILE *fp;
 	fp = fopen(filepath, "r");
 	
-	//파일의 끝인지 체크하는 변수 하나 만들었다. 
 	
 	deliverySystem = (storage_t**)malloc(x*sizeof(storage_t*));
 	//systemSize[0]'층' 만큼을 만든다. 한 층에 systemSize[1]개의 보관함 존재 
@@ -90,12 +96,12 @@ static void initStorage(int x, int y, char* filepath) {
 		}
 	}
 	
-	/*파일의 끝까지 반복문 만들어서
-	while(scan != EOF) 하면 되나?
-	while(1) 하고 break 쓸까?
-	첫번째= 층 두번째= 칸 
-	동 ->building 호 ->room 비밀번호 문자열 순으로 읽어서 동적 메모리에 넣어주기 
-	*/
+	//파일의 끝까지 반복문 만들어서
+	//while(scan != EOF) 하면 되나?
+	//while(1) 하고 break 쓸까?
+	//첫번째= 층 두번째= 칸 
+	//동 ->building 호 ->room 비밀번호 문자열 순으로 읽어서 동적 메모리에 넣어주기 
+	
 	fscanf(fp, "%d", &temp);
 	fscanf(fp, "%d", &temp);
 	fscanf(fp, "%d", &temp);
@@ -124,6 +130,8 @@ static void initStorage(int x, int y, char* filepath) {
 
 	}
 	
+	함수 용도 착각했던 당시 썼던 코드. 내부 함수 용도 바꿔도 되나 물어보고 가능하면 쓸것 
+	*/ 
 }
 
 //get password input and check if it is correct for the cell (x,y)
@@ -193,7 +201,15 @@ int str_backupSystem(char* filepath) {
 //return : 0 - successfully created, -1 - failed to create the system
 int str_createSystem(char* filepath) {
 	int temp;
+	int i,j; 
 	/*값을 잠시 여기다 저장해두자...*/ 
+	
+	int scanX;
+	int scanY;
+	//deliverySystem[scanX][scanY] 번 메모리에 접근하기 위함
+	int scanNUM;
+	char scanPWD[PASSWD_LEN+1];
+	char scanMSG[MAX_MSG_SIZE+1];
 	
 	/*일단 파일부터 열자. 닫는 건 메인에 하나?
 	파일포인터가 어디까지 유지돌지 모르니 일단 매번 여닫는 게 안전할 것 같다.*/ 
@@ -213,12 +229,54 @@ int str_createSystem(char* filepath) {
 	//두번째 숫자를 column 나타내는 systemsize[1]에 입력
 	fscanf(fp, "%s", masterPassword);
 	//마스터 패스워드를 입력? 
+
+	
+	deliverySystem = (storage_t**)malloc(systemSize[0]*sizeof(storage_t*));
+	//systemSize[0]'층' 만큼을 만든다. 한 층에 systemSize[1]개의 보관함 존재 
+	for (temp=0; temp<systemSize[0]; temp++)
+	{
+		deliverySystem[temp] = (storage_t*)malloc(systemSize[1]*sizeof(storage_t));
+	}
+	//각 '층'에 보관함 만들기
+	
+	for (i=0; i<systemSize[0]; i++)
+	{
+		for(j=0; j<systemSize[1]; j++)
+		{
+			initStorage(i, j);
+		}
+	}
+	
+	/*initStorage(systemSize[0], systemSize[1], filepath);
+	//보관함 칸 수 만큼 동적 메모리 할당 
+	함수 용도 착각했던 시절 코드 흔적*/
+	
+	//파일 읽기 
+	while (fscanf(fp, "%d %d", &scanX, &scanY) != EOF)
+	// EOF인 경우 루프를 끝내기. 
+	{
+		//일단 다른 변수도 저장용 변수를 만들자  
+		//문자열은 strcpy 쓰기? 난 내 프로그램이 잘 작동될걸 믿으니까 한줄 단위로 처리할것
+
+		fscanf(fp, "%d", &scanNUM);
+		deliverySystem[scanX][scanY].building = scanNUM;
+		//동 읽기
+		fscanf(fp, "%d", &scanNUM);
+		deliverySystem[scanX][scanY].room = scanNUM;
+		//호 읽기
+		fscanf(fp, "%s", scanPWD);
+		strcpy (deliverySystem[scanX][scanY].passwd, scanPWD);
+		//비밀번호 읽기
+		fscanf(fp, "%s", scanMSG);
+		strcpy (deliverySystem[scanX][scanY].content, scanMSG);
+		//내용물 읽기
+		deliverySystem[scanX][scanY].cnt = 1;
+		//cnt에 값 저 장 
+
+	} 
+	
 	fclose(fp);
 	
-	initStorage(systemSize[0], systemSize[1], filepath);
-	//보관함 칸 수 만큼 동적 메모리 할당 
-	
-
 	return 0;
 }
 
