@@ -420,7 +420,8 @@ int str_findStorage(int nBuilding, int nRoom) {
 			{
 				if (deliverySystem[i][j].room == nRoom)
 				{
-					printf("your package is in row %i, column %i\n"); 
+					printf("your package is in row %i, column %i\n", i, j); 
+					cnt++;
 				}
 			}
 		}
