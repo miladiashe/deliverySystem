@@ -18,9 +18,9 @@ typedef struct {
 	int cnt;
 	char passwd[PASSWD_LEN+1];
 	
-	//char *content;
+	char *content;
 	//안돼서 구조체 변수 새로 만들었어요 
-	char content[MAX_MSG_SIZE+1];
+	// content[MAX_MSG_SIZE+1];
 } storage_t;
 //storage_t 라는 타입으로 위의 구조체를 불러올 수 있게 한다. 
 
@@ -61,7 +61,8 @@ static void initStorage(int x, int y) {
 	deliverySystem[x][y].cnt = 0;
 	strcpy (deliverySystem[x][y].passwd , masterPassword);
 	//'기본 비밀번호'는 마스터 비밀번호와 같게 해 두는 것이 안전할것이다. 
-	strcpy (deliverySystem[x][y].content , "\0");
+	//택배가 들어갈때마다 메모리를 할당하니 기본값은 필요없다. 
+	//strcpy (deliverySystem[x][y].content , "\0");
 /*	int temp;
 	int i;
 	int scanX;
@@ -211,6 +212,8 @@ int str_createSystem(char* filepath) {
 	char scanPWD[PASSWD_LEN+1];
 	char scanMSG[MAX_MSG_SIZE+1];
 	//변수들은 선언해서 일단 한번 입력을 받고 그걸 복사하는 식으로 구현. 
+	int MSGlength;
+	//메시지 길이를 잰다. 
 	
 	/*일단 파일부터 열자. 닫는 건 메인에 하나?
 	파일포인터가 어디까지 유지돌지 모르니 일단 매번 여닫는 게 안전할 것 같다.*/ 
@@ -269,8 +272,13 @@ int str_createSystem(char* filepath) {
 		strcpy (deliverySystem[scanX][scanY].passwd, scanPWD);
 		//비밀번호 읽기
 		fscanf(fp, "%s", scanMSG);
-		strcpy (deliverySystem[scanX][scanY].content, scanMSG);
+		//문자 읽어서 길이 비교 후 동적 메모리 할당 
+		MSGlength = strlen(scanMSG);
+		deliverySystem[scanX][scanY].content = (char *)malloc(MSGlength*sizeof(char));
+		//실수한코드  
+		//strcpy (deliverySystem[scanX][scanY].content, scanMSG);
 		//내용물 읽기
+		//이부분 동적 메모리 할당해서 구현 
 		deliverySystem[scanX][scanY].cnt = 1;
 		//cnt에 값 저 장 
 
@@ -285,7 +293,19 @@ int str_createSystem(char* filepath) {
 //deliverySystem 에 줬던 메모리 되돌려놓기
 void str_freeSystem(void) {
 	int temp;
+	int temp2;
 	//for 위한 변수 
+	for (temp=0; temp<systemSize[0]; temp++)
+	{
+		for (temp2=0; temp2<systemSize[1]; temp2++)
+		{
+			if(deliverySystem[temp][temp2].cnt>0)
+			{
+				free(deliverySystem[temp][temp2].content);
+			}
+		}
+	}
+	
 	for (temp=0; temp<systemSize[0]; temp++)
 	{
 		free(deliverySystem[temp]);
@@ -355,11 +375,16 @@ int str_checkStorage(int x, int y) {
 //return : 0 - successfully put the package, -1 - failed to put
 int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) {
 	
+	int MSGlength;
+	
 	deliverySystem[x][y].building = nBuilding;
 	deliverySystem[x][y].room = nRoom;
-	strcpy (deliverySystem[x][y].content, msg);
+	//strcpy (deliverySystem[x][y].content, msg);
+	MSGlength = strlen(msg);
+	
 	strcpy (deliverySystem[x][y].passwd, passwd);
 	deliverySystem[x][y].cnt = 1;
+	
 	
 	if(deliverySystem[x][y].building != nBuilding
 	|| deliverySystem[x][y].room != nRoom
@@ -389,6 +414,7 @@ int str_extractStorage(int x, int y) {
 		//2. 맞으면 소포를 꺼내준다
 		printf("\n소포 내용물 : %s\n", deliverySystem[x][y].content);
 		initStorage(x,y);
+		free(deliverySystem[x][y].content);
 		//보관함을 비운다 
 		return 0;
 		//3. initstorage(x,y);
