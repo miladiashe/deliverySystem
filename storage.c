@@ -381,7 +381,8 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 	deliverySystem[x][y].room = nRoom;
 	//strcpy (deliverySystem[x][y].content, msg);
 	MSGlength = strlen(msg);
-	
+	deliverySystem[x][y].content = (char *)malloc(MSGlength*sizeof(char));
+	strcpy(deliverySystem[x][y].content, msg);
 	strcpy (deliverySystem[x][y].passwd, passwd);
 	deliverySystem[x][y].cnt = 1;
 	
