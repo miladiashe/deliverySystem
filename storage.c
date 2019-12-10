@@ -275,6 +275,7 @@ int str_createSystem(char* filepath) {
 		//문자 읽어서 길이 비교 후 동적 메모리 할당 
 		MSGlength = strlen(scanMSG);
 		deliverySystem[scanX][scanY].content = (char *)malloc(MSGlength*sizeof(char));
+		strcpy(deliverySystem[scanX][scanY].content, scanMSG);
 		//실수한코드  
 		//strcpy (deliverySystem[scanX][scanY].content, scanMSG);
 		//내용물 읽기
