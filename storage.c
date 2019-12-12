@@ -414,7 +414,7 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 	|| strcmp(deliverySystem[x][y].passwd, passwd)!=0)
 	//만약 비교한게 하나라도 틀릴 경우 
 	{
-		return 1; 
+		return -1; 
 		//1 반환 
 	}
 	else //다 맞으면 0 반환 
