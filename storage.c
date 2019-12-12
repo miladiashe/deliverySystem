@@ -239,10 +239,18 @@ int str_createSystem(char* filepath) {
 
 	
 	deliverySystem = (storage_t**)malloc(systemSize[0]*sizeof(storage_t*));
+	if (deliverySystem == NULL)
+	{
+		return -1;
+	}
 	//systemSize[0]'층' 만큼을 만든다. 한 층에 systemSize[1]개의 보관함 존재 
 	for (temp=0; temp<systemSize[0]; temp++)
 	{
 		deliverySystem[temp] = (storage_t*)malloc(systemSize[1]*sizeof(storage_t));
+		if (deliverySystem[temp] == NULL)
+		{
+			return -1;
+		}
 	}
 	//각 '층'에 보관함 만들기
 	
@@ -278,6 +286,10 @@ int str_createSystem(char* filepath) {
 		//문자 읽어서 길이 비교 후 동적 메모리 할당 
 		MSGlength = strlen(scanMSG);
 		deliverySystem[scanX][scanY].content = (char *)malloc(MSGlength*sizeof(char));
+		if (deliverySystem[scanX][scanY].content == NULL)
+		{
+			return -1;
+		}
 		strcpy(deliverySystem[scanX][scanY].content, scanMSG);
 		//실수한코드  
 		//strcpy (deliverySystem[scanX][scanY].content, scanMSG);
@@ -285,7 +297,6 @@ int str_createSystem(char* filepath) {
 		//이부분 동적 메모리 할당해서 구현 
 		deliverySystem[scanX][scanY].cnt = 1;
 		//cnt에 값 저 장 
-
 	} 
 	
 	fclose(fp);
@@ -359,7 +370,7 @@ void str_printStorageStatus(void) {
 int str_checkStorage(int x, int y) {
 	if (x < 0 || x >= systemSize[0])
 	{
-		return -1;ㄴ 
+		return -1;
 	}
 	
 	if (y < 0 || y >= systemSize[1])
@@ -388,7 +399,11 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 	//strcpy (deliverySystem[x][y].content, msg);
 	MSGlength = strlen(msg);
 	deliverySystem[x][y].content = (char *)malloc(MSGlength*sizeof(char));
-	strcpy(deliverySystem[x][y].content, msg);
+	if (deliverySystem[x][y].content == NULL)
+	{
+		return -1;
+	}
+	strcpy (deliverySystem[x][y].content, msg);
 	strcpy (deliverySystem[x][y].passwd, passwd);
 	deliverySystem[x][y].cnt = 1;
 	
@@ -420,8 +435,8 @@ int str_extractStorage(int x, int y) {
 	{
 		//2. 맞으면 소포를 꺼내준다
 		printf("\n소포 내용물 : %s\n", deliverySystem[x][y].content);
-		initStorage(x,y);
 		free(deliverySystem[x][y].content);
+		initStorage(x,y);
 		//보관함의 내용을 비운다 
 		return 0;
 		//3. initstorage(x,y);
