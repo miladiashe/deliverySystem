@@ -19,10 +19,10 @@ typedef struct {
 	char passwd[PASSWD_LEN+1];
 	
 	char *content;
-	//안돼서 구조체 변수 새로 만들었어요 
+	//안돼서 구조체 변수 새로 만들었는데 이러면 안되는군 
 	// content[MAX_MSG_SIZE+1];
 } storage_t;
-//storage_t 라는 타입으로 위의 구조체를 불러올 수 있게 한다. 
+//storage_t 라는 타입으로 위의 구조체를 불러올 수 있게 한다. 요 
 
 
 static storage_t** deliverySystem; 			//deliverySystem
@@ -62,8 +62,11 @@ static void initStorage(int x, int y) {
 	strcpy (deliverySystem[x][y].passwd , masterPassword);
 	//'기본 비밀번호'는 마스터 비밀번호와 같게 해 두는 것이 안전할것이다. 
 	//택배가 들어갈때마다 메모리를 할당하니 기본값은 필요없다. 
-	//strcpy (deliverySystem[x][y].content , "\0");
-/*	int temp;
+	//strcpy (deliverySystem[x][y].content , "\0");  실수한 코드 1 
+	
+	
+/*	실수한 코드 2 
+	int temp;
 	int i;
 	int scanX;
 	int scanY;
@@ -306,12 +309,14 @@ void str_freeSystem(void) {
 			}
 		}
 	}
+	//소포 내용을 넣는 메모리를 풀어준다 
 	
 	for (temp=0; temp<systemSize[0]; temp++)
 	{
 		free(deliverySystem[temp]);
 	}
 	free(deliverySystem);
+	//보관함 전체 메모리를 풀어준다 
 }
 
 
@@ -354,7 +359,7 @@ void str_printStorageStatus(void) {
 int str_checkStorage(int x, int y) {
 	if (x < 0 || x >= systemSize[0])
 	{
-		return -1;
+		return -1;ㄴ 
 	}
 	
 	if (y < 0 || y >= systemSize[1])
@@ -417,7 +422,7 @@ int str_extractStorage(int x, int y) {
 		printf("\n소포 내용물 : %s\n", deliverySystem[x][y].content);
 		initStorage(x,y);
 		free(deliverySystem[x][y].content);
-		//보관함을 비운다 
+		//보관함의 내용을 비운다 
 		return 0;
 		//3. initstorage(x,y);
 		//4. return 0
